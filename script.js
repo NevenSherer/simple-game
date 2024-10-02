@@ -40,6 +40,7 @@ var playerDownSpeed = 0;
 var playerX = 100;
 var playerY = 0;
 var playerSpeed = 1;
+var canWalk = true;
 
 //Floor initialization
 var floorHeight = CANVAS_HEIGHT - 120;
@@ -187,39 +188,54 @@ function faceLeft() {
     }
 }
 
+//Create the function to dash in the direction the player is facing
+var dashing = false;
+function dash() {
+    playerState = 'roll';
+    playerDownSpeed = playerDownSpeed / 2;
+    dashing = true;
+    canWalk = false;
+    if (facingRight) {
+        gameSpeed = 16;
+    }
+    else {
+        gameSpeed = -16;
+    }
+}
+
 //Move function
 function move() {
-    if (keys && keys[87]) {
-        if (onFloor) {
-            playerDownSpeed -= 25;
-            onFloor = false;
+    if (canWalk) {
+        if (keys && keys[87]) {
+            if (onFloor) {
+                playerDownSpeed -= 25;
+                onFloor = false;
+            }
+        };
+        if (keys && keys[32]) {
+            if (onFloor) {
+                playerDownSpeed -= 25;
+                onFloor = false;
+            }
+        };
+        if (keys && keys[65]) {
+            playerState = 'run';
+            if (gameSpeed > -8) {
+                gameSpeed -= playerSpeed;
+            }
+            faceLeft();
+        };
+        if (keys && keys[68]) {
+            playerState = 'run';
+            if (gameSpeed < 8) {
+                gameSpeed += playerSpeed;
+            }
+            faceRight();
+        };
+        if (keys && keys[17]) {
+            dash();
         }
-    };
-    if (keys && keys[32]) {
-        if (onFloor) {
-            playerDownSpeed -= 25;
-            onFloor = false;
-        }
-    };
-    if (keys && keys[65]) {
-        //playerX -= playerSpeed;
-        playerState = 'run';
-        gameSpeed -= playerSpeed;
-        if (gameSpeed < -8) {
-            gameSpeed = -8;
-        }
-        faceLeft();
-    };
-    if (keys && keys[68]) {
-        //playerX += playerSpeed;
-        playerState = 'run';
-        gameSpeed += playerSpeed;
-        if (gameSpeed > 8) {
-            gameSpeed = 8;
-        }
-        faceRight();
-    };
-
+    }
 };
 
 //Set up gravity
@@ -291,6 +307,13 @@ window.addEventListener('load', function() {
             if (playerDownSpeed < 5) {
                 playerDownSpeed = 5;
             }
+        }
+        
+        if (dashing && onFloor) {
+            dashing = false;
+            canWalk = true;
+            gameSpeed /= 2;
+            playerstate = 'fall';
         }
 
         move();
