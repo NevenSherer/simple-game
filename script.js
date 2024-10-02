@@ -40,6 +40,8 @@ var playerDownSpeed = 0;
 var playerX = 100;
 var playerY = 0;
 var playerSpeed = 1;
+var canWalk = true;
+gravitySpeed = 1;
 
 //Floor initialization
 var floorHeight = CANVAS_HEIGHT - 120;
@@ -187,58 +189,80 @@ function faceLeft() {
     }
 }
 
+//Create the function to dash in the direction the player is facing
+var dashing = false;
+function dash() {
+    if (playerDownSpeed > 0 && !onFloor) {
+        playerState = 'roll';
+        gravitySpeed /= 4;
+        dashing = true;
+        canWalk = false;
+        if (facingRight) {
+            gameSpeed = 16;
+        }
+        else {
+            gameSpeed = -16;
+        }
+    }
+}
+
 //Move function
 function move() {
-    if (keys && keys[87]) {
-        if (onFloor) {
-            playerDownSpeed -= 25;
-            onFloor = false;
+    //console.log(canWalk);
+    if (canWalk) {
+        if (keys && keys[87]) {
+            if (onFloor) {
+                playerDownSpeed -= 25;
+                onFloor = false;
+            }
+        };
+        if (keys && keys[32]) {
+            if (onFloor) {
+                playerDownSpeed -= 25;
+                onFloor = false;
+            }
+        };
+        if (keys && keys[65]) {
+            playerState = 'run';
+            gameSpeed -= playerSpeed;
+            if (gameSpeed < -8) {
+                gameSpeed = -8;
+            }
+            faceLeft();
+        };
+        if (keys && keys[68]) {
+            playerState = 'run';
+            gameSpeed += playerSpeed;
+            if (gameSpeed > 8) {
+                gameSpeed = 8;
+            }
+            faceRight();
+        };
+        if (keys && keys[17]) {
+            dash();
         }
-    };
-    if (keys && keys[32]) {
-        if (onFloor) {
-            playerDownSpeed -= 25;
-            onFloor = false;
-        }
-    };
-    if (keys && keys[65]) {
-        //playerX -= playerSpeed;
-        playerState = 'run';
-        gameSpeed -= playerSpeed;
-        if (gameSpeed < -8) {
-            gameSpeed = -8;
-        }
-        faceLeft();
-    };
-    if (keys && keys[68]) {
-        //playerX += playerSpeed;
-        playerState = 'run';
-        gameSpeed += playerSpeed;
-        if (gameSpeed > 8) {
-            gameSpeed = 8;
-        }
-        faceRight();
-    };
-
+    }
 };
 
 //Set up gravity
 function gravity() {
-    playerDownSpeed += 1;
+    playerDownSpeed += gravitySpeed;
     if (onFloor) {
         playerDownSpeed = 0;
         if (!keys) {
             playerState = 'idle';
         }
     }
-    if (playerDownSpeed < 0) {
-        playerState = 'jump';
+    if (!dashing) {
+        if (playerDownSpeed < 0) {
+            playerState = 'jump';
+        }
+        if (playerDownSpeed > 0) {
+            playerState = 'fall';
+        }
     }
-    if (playerDownSpeed > 0) {
-        playerState = 'fall';
-    }
-    console.log(playerDownSpeed);
-    console.log(onFloor);
+    //console.log(playerDownSpeed);
+    //console.log(onFloor);
     playerY += playerDownSpeed;
 }
 
@@ -277,7 +301,7 @@ window.addEventListener('load', function() {
         }
 
         if (keys.length > 0) {
-            console.log(keys);
+            //console.log(keys);
         }
 
         if (!keys[65] && !keys[68]) {
@@ -291,6 +315,13 @@ window.addEventListener('load', function() {
             if (playerDownSpeed < 5) {
                 playerDownSpeed = 5;
             }
+        }
+        
+        if (onFloor) {
+            dashing = false;
+            canWalk = true;
+            playerstate = 'idle';
+            gravitySpeed = 1;
         }
 
         move();
