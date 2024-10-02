@@ -205,6 +205,7 @@ function dash() {
 
 //Move function
 function move() {
+    console.log(canWalk);
     if (canWalk) {
         if (keys && keys[87]) {
             if (onFloor) {
