@@ -218,14 +218,14 @@ var facingRight = true;
 var facingLeft = !facingRight;
 function faceRight() {
     if (!facingRight) {
-        defineSpriteArea();
+        //defineSpriteArea();
         facingRight = true;
         facingLeft = false;
     }
 }
 function faceLeft() {
     if (!facingLeft) {
-        defineSpriteArea();
+        //defineSpriteArea();
         facingLeft = true;
         facingRight = false;
     }
@@ -274,23 +274,29 @@ function move() {
             playerX += runningSpeed;
             faceRight();
         };
+		if (keys[65] && keys[68]) {
+			playerState = 'idle';
+		};
         if (keys && keys[17]) {
             dash();
         };
-        if (playerX >= CANVAS_WIDTH - 100 - playerWidth) {
+        if (playerX > CANVAS_WIDTH - 200 - playerWidth) {
             gameSpeed += playerSpeed;
+			playerX = CANVAS_WIDTH - 200 - playerWidth;
             if (gameSpeed > runningSpeed) {
                 gameSpeed = runningSpeed;
-                playerX = CANVAS_WIDTH - 100 - playerWidth;
-            }
-        };
-        if (playerX <= 100) {
+            };
+        }
+        else if (playerX < 100) {
             gameSpeed -= playerSpeed;
             playerX = 100;
             if (gameSpeed < -runningSpeed) {
                 gameSpeed = -runningSpeed;
-            }
-        };
+            };
+        }
+		else {
+			gameSpeed = 0;
+		}
     }
 };
 
