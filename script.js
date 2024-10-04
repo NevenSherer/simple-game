@@ -119,21 +119,22 @@ class Obstacle {
 
     update() {
         this.speed = gameSpeed;
-        if (this.x <= CANVAS_WIDTH / 2 && this.x + this.width > 0)
+        if (this.x <= playerX + playerWidth && this.x + this.width >= playerX && playerY + playerHeight >= this.y && playerY <= this.y + this. height)
         {
-            if (colliding(playerX, playerY, playerWidth, playerHeight, this.x, this.y, this.width, this.height)) {
-                if (playerX + playerWidth >= this.x) {
-                    playerX = this.x - playerWidth;
-                }
-                if (playerX <= this.x + this.width) {
-                    playerX = this.x + this.width;
-                }
-                if (playerY >= this.y - playerHeight) {
-                    playerY = this.y - playerHeight;
-                }
-                if (playerY <= this.y + this.height) {
-                    playerY = this.y + this.height;
-                }
+            if (playerX + playerWidth >= this.x && playerY + playerHeight >= this.y && playerY <= this.y + this.height) {
+                playerX = this.x - playerWidth;
+            }
+            if (playerX <= this.x + this.width && playerY + playerHeight >= this.y && playerY <= this.y + this.height) {
+                //playerX = this.x + this.width;
+            }
+            if (playerY + playerHeight >= this.y && playerX <= this.x + this.width && playerX + playerWidth >= this.x) {
+                playerY = this.y - playerHeight;
+                //console.log('e');
+                //console.log(this.y);
+                //console.log(playerY);
+            }
+            if (playerY <= this.y + this.height  && playerX <= this.x + this.width && playerX + playerWidth >= this.x) {
+                //playerY = this.y + this.height;
             }
         }
         this.x -= this.speed;
@@ -145,7 +146,7 @@ class Obstacle {
 }
 const blocks = new Image();
 blocks.src = './sprites/black.png';
-const testObstacle = new Obstacle(blocks, 50, 250);
+const testObstacle = new Obstacle(blocks, 100, 250);
 
 //Animation and game speed controller
 let gameFrame = 0;
@@ -242,7 +243,7 @@ function dash() {
             gameSpeed = 2 * runningSpeed;
         }
         else {
-            gameSpeed = -2 * runningSpeeds;
+            gameSpeed = -2 * runningSpeed;
         }
     }
 }
@@ -265,23 +266,31 @@ function move() {
         };
         if (keys && keys[65]) {
             playerState = 'run';
-            gameSpeed -= playerSpeed;
-            if (gameSpeed < -runningSpeed) {
-                gameSpeed = -runningSpeed;
-            }
+            playerX -= runningSpeed;
             faceLeft();
         };
         if (keys && keys[68]) {
             playerState = 'run';
-            gameSpeed += playerSpeed;
-            if (gameSpeed > runningSpeed) {
-                gameSpeed = runningSpeed;
-            }
+            playerX += runningSpeed;
             faceRight();
         };
         if (keys && keys[17]) {
             dash();
-        }
+        };
+        if (playerX >= CANVAS_WIDTH - 100 - playerWidth) {
+            gameSpeed += playerSpeed;
+            if (gameSpeed > runningSpeed) {
+                gameSpeed = runningSpeed;
+                playerX = CANVAS_WIDTH - 100 - playerWidth;
+            }
+        };
+        if (playerX <= 100) {
+            gameSpeed -= playerSpeed;
+            playerX = 100;
+            if (gameSpeed < -runningSpeed) {
+                gameSpeed = -runningSpeed;
+            }
+        };
     }
 };
 
