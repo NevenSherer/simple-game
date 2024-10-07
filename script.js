@@ -41,7 +41,8 @@ var playerX = 100;
 var playerY = 0;
 var playerSpeed = 1;
 var canWalk = true;
-gravitySpeed = 1;
+var gravitySpeed = 1;
+var runningSpeed = 8;
 
 //Floor initialization
 var floorHeight = CANVAS_HEIGHT - 120;
@@ -106,9 +107,50 @@ const layer5 = new Layer(backgroundLayer5, 1);
 
 const backgroundLayers = [layer1, layer2, layer3, layer4, layer5];
 
+//Obstacle class setup
+class Obstacle {
+    constructor(image, x, y, width, height) {
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
+        this.image = image;
+    }
+
+    update() {
+        this.speed = gameSpeed;
+        if (this.x <= playerX + playerWidth && this.x + this.width >= playerX && playerY + playerHeight >= this.y && playerY <= this.y + this. height)
+        {
+            if (playerY + playerHeight >= this.y && playerX <= this.x + this.width && playerX + playerWidth >= this.x && playerDownSpeed >= 0 && playerY + playerHeight - this.y < playerDownSpeed) {
+                playerY = this.y - playerHeight;
+                onFloor = true;
+            }
+            else if (playerX + playerWidth >= this.x && playerY + playerHeight >= this.y && playerY <= this.y + this.height && playerX + playerWidth - this.x < 20) {
+                playerX = this.x - playerWidth;
+            }
+            else if (playerX <= this.x + this.width && playerY + playerHeight >= this.y && playerY <= this.y + this.height && playerX - (this.x + this.width) > -20) {
+                playerX = this.x + this.width;
+            }
+            else if (playerY <= this.y + this.height  && playerX <= this.x + this.width && playerX + playerWidth >= this.x && playerY - (this.y + this.height) > playerDownSpeed) {
+                playerY = this.y + this.height;
+                playerDownSpeed = 0;
+            }
+        }
+        this.x -= this.speed;
+    }
+
+    draw() {
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
+const blocks = new Image();
+blocks.src = './sprites/black.png';
+const testObstacle = new Obstacle(blocks, 800, 500, 100, 250);
+const secondObstacle = new Obstacle(blocks, 1100, 300, 100, 100)
+
 //Animation and game speed controller
 let gameFrame = 0;
-const staggerFrames = 5;
+var staggerFrames = 5;
 const spriteAnimations = [];
 const animationStates = [
     {
@@ -176,14 +218,14 @@ var facingRight = true;
 var facingLeft = !facingRight;
 function faceRight() {
     if (!facingRight) {
-        defineSpriteArea();
+        //defineSpriteArea();
         facingRight = true;
         facingLeft = false;
     }
 }
 function faceLeft() {
     if (!facingLeft) {
-        defineSpriteArea();
+        //defineSpriteArea();
         facingLeft = true;
         facingRight = false;
     }
@@ -198,10 +240,10 @@ function dash() {
         dashing = true;
         canWalk = false;
         if (facingRight) {
-            gameSpeed = 16;
+            gameSpeed = 2 * runningSpeed;
         }
         else {
-            gameSpeed = -16;
+            gameSpeed = -2 * runningSpeed;
         }
     }
 }
@@ -213,40 +255,62 @@ function move() {
         if (keys && keys[87]) {
             if (onFloor) {
                 playerDownSpeed -= 25;
+                if (playerDownSpeed < -25) {
+                    playerDownSpeed = -25;
+                }
                 onFloor = false;
             }
         };
         if (keys && keys[32]) {
             if (onFloor) {
                 playerDownSpeed -= 25;
+                if (playerDownSpeed < -25) {
+                    playerDownSpeed = -25;
+                }
                 onFloor = false;
             }
         };
         if (keys && keys[65]) {
             playerState = 'run';
-            gameSpeed -= playerSpeed;
-            if (gameSpeed < -8) {
-                gameSpeed = -8;
-            }
+            playerX -= runningSpeed;
             faceLeft();
         };
         if (keys && keys[68]) {
             playerState = 'run';
-            gameSpeed += playerSpeed;
-            if (gameSpeed > 8) {
-                gameSpeed = 8;
-            }
+            playerX += runningSpeed;
             faceRight();
         };
+		if (keys[65] && keys[68]) {
+			playerState = 'idle';
+		};
         if (keys && keys[17]) {
             dash();
+        };
+        if (playerX > CANVAS_WIDTH - 200 - playerWidth) {
+            gameSpeed += playerSpeed;
+			playerX = CANVAS_WIDTH - 200 - playerWidth;
+            if (gameSpeed > runningSpeed) {
+                gameSpeed = runningSpeed;
+            };
+        }
+        else if (playerX < 100) {
+            gameSpeed -= playerSpeed;
+            playerX = 100;
+            if (gameSpeed < -runningSpeed) {
+                gameSpeed = -runningSpeed;
+            };
+        }
+		else {
+			gameSpeed = 0;
+		};
+        if (gameSpeed > 25) {
+            gameSpeed = 25;
         }
     }
 };
 
 //Set up gravity
 function gravity() {
-    playerDownSpeed += gravitySpeed;
     if (onFloor) {
         playerDownSpeed = 0;
         if (!keys) {
@@ -264,6 +328,7 @@ function gravity() {
     //console.log(playerDownSpeed);
     //console.log(onFloor);
     playerY += playerDownSpeed;
+    playerDownSpeed += gravitySpeed;
 }
 
 //Add input
@@ -288,6 +353,12 @@ window.addEventListener('load', function() {
             layer.update();
             layer.draw();
         });
+
+        //Draw obstacle
+        testObstacle.update();
+        testObstacle.draw();
+        secondObstacle.update();
+        secondObstacle.draw();
 
         //Draw player
         let position = Math.floor(gameFrame / staggerFrames) % spriteAnimations[playerState].loc.length;
