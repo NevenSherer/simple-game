@@ -109,11 +109,11 @@ const backgroundLayers = [layer1, layer2, layer3, layer4, layer5];
 
 //Obstacle class setup
 class Obstacle {
-    constructor(image, width, height) {
+    constructor(image, x, y, width, height) {
         this.width = width;
         this.height = height;
-        this.x = CANVAS_WIDTH;
-        this.y = CANVAS_HEIGHT - this.height;
+        this.x = x;
+        this.y = y;
         this.image = image;
     }
 
@@ -121,20 +121,19 @@ class Obstacle {
         this.speed = gameSpeed;
         if (this.x <= playerX + playerWidth && this.x + this.width >= playerX && playerY + playerHeight >= this.y && playerY <= this.y + this. height)
         {
-            if (playerX + playerWidth >= this.x && playerY + playerHeight >= this.y && playerY <= this.y + this.height) {
+            if (playerY + playerHeight >= this.y && playerX <= this.x + this.width && playerX + playerWidth >= this.x && playerDownSpeed >= 0 && playerY + playerHeight - this.y < playerDownSpeed) {
+                playerY = this.y - playerHeight;
+                onFloor = true;
+            }
+            else if (playerX + playerWidth >= this.x && playerY + playerHeight >= this.y && playerY <= this.y + this.height && playerX + playerWidth - this.x < 20) {
                 playerX = this.x - playerWidth;
             }
-            if (playerX <= this.x + this.width && playerY + playerHeight >= this.y && playerY <= this.y + this.height) {
-                //playerX = this.x + this.width;
+            else if (playerX <= this.x + this.width && playerY + playerHeight >= this.y && playerY <= this.y + this.height && playerX - (this.x + this.width) > -20) {
+                playerX = this.x + this.width;
             }
-            if (playerY + playerHeight >= this.y && playerX <= this.x + this.width && playerX + playerWidth >= this.x) {
-                playerY = this.y - playerHeight;
-                //console.log('e');
-                //console.log(this.y);
-                //console.log(playerY);
-            }
-            if (playerY <= this.y + this.height  && playerX <= this.x + this.width && playerX + playerWidth >= this.x) {
-                //playerY = this.y + this.height;
+            else if (playerY <= this.y + this.height  && playerX <= this.x + this.width && playerX + playerWidth >= this.x && playerY - (this.y + this.height) > playerDownSpeed) {
+                playerY = this.y + this.height;
+                playerDownSpeed = 0;
             }
         }
         this.x -= this.speed;
@@ -146,7 +145,8 @@ class Obstacle {
 }
 const blocks = new Image();
 blocks.src = './sprites/black.png';
-const testObstacle = new Obstacle(blocks, 100, 250);
+const testObstacle = new Obstacle(blocks, 800, 500, 100, 250);
+const secondObstacle = new Obstacle(blocks, 1100, 300, 100, 100)
 
 //Animation and game speed controller
 let gameFrame = 0;
@@ -255,12 +255,18 @@ function move() {
         if (keys && keys[87]) {
             if (onFloor) {
                 playerDownSpeed -= 25;
+                if (playerDownSpeed < -25) {
+                    playerDownSpeed = -25;
+                }
                 onFloor = false;
             }
         };
         if (keys && keys[32]) {
             if (onFloor) {
                 playerDownSpeed -= 25;
+                if (playerDownSpeed < -25) {
+                    playerDownSpeed = -25;
+                }
                 onFloor = false;
             }
         };
@@ -296,13 +302,15 @@ function move() {
         }
 		else {
 			gameSpeed = 0;
-		}
+		};
+        if (gameSpeed > 25) {
+            gameSpeed = 25;
+        }
     }
 };
 
 //Set up gravity
 function gravity() {
-    playerDownSpeed += gravitySpeed;
     if (onFloor) {
         playerDownSpeed = 0;
         if (!keys) {
@@ -320,6 +328,7 @@ function gravity() {
     //console.log(playerDownSpeed);
     //console.log(onFloor);
     playerY += playerDownSpeed;
+    playerDownSpeed += gravitySpeed;
 }
 
 //Add input
@@ -348,6 +357,8 @@ window.addEventListener('load', function() {
         //Draw obstacle
         testObstacle.update();
         testObstacle.draw();
+        secondObstacle.update();
+        secondObstacle.draw();
 
         //Draw player
         let position = Math.floor(gameFrame / staggerFrames) % spriteAnimations[playerState].loc.length;
