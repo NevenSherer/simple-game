@@ -143,10 +143,18 @@ class Obstacle {
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
-const blocks = new Image();
-blocks.src = './sprites/black.png';
-const testObstacle = new Obstacle(blocks, 800, 500, 100, 250);
-const secondObstacle = new Obstacle(blocks, 1100, 300, 100, 100)
+
+//Use JSON file to create the level
+const level1JSON = '[{"image":"./sprites/black.png","x":500,"y":300,"width":100,"height":100},{"image":"./sprites/black.png","x":800, "y":400,"width":100,"height":100}]';
+const level1Data = JSON.parse(level1JSON);
+var level = [];
+function createObstacles(level) {
+    for (i = 0; i < level1Data.length; i++) {
+        level[i] = new Obstacle(level1Data[i].image, level1Data[i].x, level1Data[i].y, level1Data[i].width, level1Data[i].height);
+    }
+    return level;
+}
+console.log(level);
 
 //Animation and game speed controller
 let gameFrame = 0;
@@ -353,12 +361,6 @@ window.addEventListener('load', function() {
             layer.update();
             layer.draw();
         });
-
-        //Draw obstacle
-        testObstacle.update();
-        testObstacle.draw();
-        secondObstacle.update();
-        secondObstacle.draw();
 
         //Draw player
         let position = Math.floor(gameFrame / staggerFrames) % spriteAnimations[playerState].loc.length;
