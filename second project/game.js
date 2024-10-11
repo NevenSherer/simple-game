@@ -23,7 +23,43 @@ class Player {
         this.runningSpeed = runningSpeed;
         this.state = state;
     }
+
+    update() {
+        
+    }
+
+    defineSpriteArea() {
+
+    }
+
+    move() {
+        if (this.canWalk) {
+
+        }
+    }
+
+    faceLeft() {
+
+    }
+
+    faceRight() {
+
+    }
+
+    draw() {
+        ctx.drawImage(this.image, 0, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.width, this.height);
+    }
 }
+
+var keys = [];
+window.addEventListener('keydown', function(e) {
+    keys = (keys || []);
+    keys[e.keyCode] = true;
+});
+window.addEventListener('keyup', function(e) {
+    keys[e.keyCode] = false;
+    //player.state = 'idle';
+});
 
 const left = new Image();
 left.src = './sprites/sprite.png'
@@ -61,7 +97,20 @@ class Objects {
         }
         else {
             if (this.x <= player.x + player.width && this.x + this.width >= player.x && player.y + player.height >= this.y && player.y <= this.y + this.height) {
-                if ()
+                if (player.y + player.height >= this.y && player.x <= this.x + this.width && player.x + player.width >= this.x && player.downSpeed >= 0 && player.y + player.height - this.y < player.downSpeed) {
+                    player.y = this.y - player.height;
+                    onFloor = true;
+                }
+                else if (player.x + player.width >= this.x && player.y + player.height >= this.y && player.y <= this.y + this.height && player.x + player.width - this.x < horizontalSpeed) {
+                    player.x = this.x - player.width;
+                }
+                else if (player.x <= this.x + this.width && player.y + player.height >= this.y && player.y <= this.y + this.height && player.x - (this.x + this.width) > horizontalSpeed) {
+                    player.x = this.x + this.width;
+                }
+                else if (player.y <= this.y + this.height && player.x <= this.x + this.width && player.x + player.width >= this.x && player.downSpeed >= 0 && player.y + player.height - this.y > player.downSpeed) {
+                    player.y = this.y + this.height;
+                    player.downSpeed = 0;
+                }
             }
         }
         this.x = this.x - horizontalSpeed;
@@ -81,3 +130,14 @@ class Objects {
         }
     }
 }
+
+window.addEventListener('load', function() {
+    function animate() {
+        player.update();
+        player.draw();
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+})
