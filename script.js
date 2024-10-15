@@ -1,5 +1,6 @@
 /**/
 
+var temp;
 var collision = true;
 var onFloor = false;
 function colliding(x, y, width, height, x2, y2, width2, height2) {
@@ -145,6 +146,10 @@ class Obstacle {
 }
 
 //Use JSON file to create the level
+temp = document.getElementById("levelData");
+console.log(temp);
+const levelData = JSON.parse(temp);
+console.log(levelData);
 const level1JSON = '[{"image":"./sprites/black.png","x":500,"y":300,"width":100,"height":100},{"image":"./sprites/black.png","x":800, "y":400,"width":100,"height":100}]';
 const level1Data = JSON.parse(level1JSON);
 var level = [];
