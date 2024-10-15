@@ -146,10 +146,17 @@ class Obstacle {
 }
 
 //Use JSON file to create the level
-temp = document.getElementById("levelData");
-console.log(temp);
-const levelData = JSON.parse(temp);
-console.log(levelData);
+async function populate() {
+        const requestURL =
+            "https://github.com/NevenSherer/simple-game/blob/level-creation/data/data.json";
+        const request = new Request(requestURL);
+  
+        const response = await fetch(request);
+        const levelData = await response.json();
+  
+        populateHeader(levelData);
+        //populateHeroes(levelData);
+    }
 const level1JSON = '[{"image":"./sprites/black.png","x":500,"y":300,"width":100,"height":100},{"image":"./sprites/black.png","x":800, "y":400,"width":100,"height":100}]';
 const level1Data = JSON.parse(level1JSON);
 var level = [];
