@@ -1,5 +1,6 @@
 /**/
 
+var temp;
 var collision = true;
 var onFloor = false;
 function colliding(x, y, width, height, x2, y2, width2, height2) {
@@ -27,22 +28,44 @@ const dropdown = document.getElementById('animations');
 /*dropdown.addEventListener('change', function(e) {
     playerState = e.target.value;
 })*/
-const playerImageRight = new Image();
-playerImageRight.src = './sprites/shadow_dog_right.png';
-const playerImageLeft = new Image();
-playerImageLeft.src = './sprites/shadow_dog_left.png';
-const playerSpriteWidth = 575;
-const playerSpriteHeight = 523;
-var playerSpriteToCharacterScale = 3;
-var playerWidth = playerSpriteWidth / playerSpriteToCharacterScale;
-var playerHeight = playerSpriteHeight / playerSpriteToCharacterScale;
-var playerDownSpeed = 0;
-var playerX = 100;
-var playerY = 0;
-var playerSpeed = 1;
-var canWalk = true;
-var gravitySpeed = 1;
-var runningSpeed = 8;
+/*const player.imageRight = new Image();
+player.imageRight.src = './sprites/shadow_dog_right.png';
+const player.imageLeft = new Image();
+player.imageLeft.src = './sprites/shadow_dog_left.png';
+const player.spriteWidth = 575;
+const player.spriteHeight = 523;
+var player.spriteToCharacterScale = 3;
+var player.width = player.spriteWidth / player.spriteToCharacterScale;
+var player.height = player.spriteHeight / player.spriteToCharacterScale;
+var player.downSpeed = 0;
+var player.x = 100;
+var player.y = 0;
+var player.speed = 1;
+var player.canWalk = true;
+var player.gravitySpeed = 1;
+var player.runningSpeed = 8;*/
+
+class Player {
+    constructor(imageRight, imageLeft, spriteWidth, spriteHeight, spriteToCharacterScale, downSpeed, x, y, speed, canWalk, gravitySpeed, runningSpeed) {
+        this.imageRight = new Image(),
+        this.imageRight.src = imageRight,
+        this.imageLeft = new Image(),
+        this.imageLeft.src = imageLeft,
+        this.spriteWidth = spriteWidth,
+        this.spriteHeight = spriteHeight,
+        this.spriteToCharacterScale = spriteToCharacterScale,
+        this.width = spriteWidth / spriteToCharacterScale,
+        this.height = spriteHeight / spriteToCharacterScale,
+        this.downSpeed = downSpeed,
+        this.x = x,
+        this.y = y,
+        this.speed = speed,
+        this.canWalk = canWalk,
+        this.gravitySpeed = gravitySpeed,
+        this.runningSpeed = runningSpeed
+    }
+}
+const player = new Player('./sprites/shadow_dog_right.png', './sprites/shadow_dog_left.png', 575, 523, 3, 0, 100, 0, 1, true, 1, 8);
 
 //Floor initialization
 var floorHeight = CANVAS_HEIGHT - 120;
@@ -119,21 +142,21 @@ class Obstacle {
 
     update() {
         this.speed = gameSpeed;
-        if (this.x <= playerX + playerWidth && this.x + this.width >= playerX && playerY + playerHeight >= this.y && playerY <= this.y + this. height)
+        if (this.x <= player.x + player.width && this.x + this.width >= player.x && player.y + player.height >= this.y && player.y <= this.y + this. height)
         {
-            if (playerY + playerHeight >= this.y && playerX <= this.x + this.width && playerX + playerWidth >= this.x && playerDownSpeed >= 0 && playerY + playerHeight - this.y < playerDownSpeed) {
-                playerY = this.y - playerHeight;
+            if (player.y + player.height >= this.y && player.x <= this.x + this.width && player.x + player.width >= this.x && player.downSpeed >= 0 && player.y + player.height - this.y < player.downSpeed) {
+                player.y = this.y - player.height;
                 onFloor = true;
             }
-            else if (playerX + playerWidth >= this.x && playerY + playerHeight >= this.y && playerY <= this.y + this.height && playerX + playerWidth - this.x < 20) {
-                playerX = this.x - playerWidth;
+            else if (player.x + player.width >= this.x && player.y + player.height >= this.y && player.y <= this.y + this.height && player.x + player.width - this.x < 20) {
+                player.x = this.x - player.width;
             }
-            else if (playerX <= this.x + this.width && playerY + playerHeight >= this.y && playerY <= this.y + this.height && playerX - (this.x + this.width) > -20) {
-                playerX = this.x + this.width;
+            else if (player.x <= this.x + this.width && player.y + player.height >= this.y && player.y <= this.y + this.height && player.x - (this.x + this.width) > -20) {
+                player.x = this.x + this.width;
             }
-            else if (playerY <= this.y + this.height  && playerX <= this.x + this.width && playerX + playerWidth >= this.x && playerY - (this.y + this.height) > playerDownSpeed) {
-                playerY = this.y + this.height;
-                playerDownSpeed = 0;
+            else if (player.y <= this.y + this.height  && player.x <= this.x + this.width && player.x + player.width >= this.x && player.y - (this.y + this.height) > player.downSpeed) {
+                player.y = this.y + this.height;
+                player.downSpeed = 0;
             }
         }
         this.x -= this.speed;
@@ -143,10 +166,48 @@ class Obstacle {
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
-const blocks = new Image();
-blocks.src = './sprites/black.png';
-const testObstacle = new Obstacle(blocks, 800, 500, 100, 250);
-const secondObstacle = new Obstacle(blocks, 1100, 300, 100, 100)
+
+var randomBlockHorizOffset = 800 + Math.floor(Math.random() * 100);
+var obstacle01 = new Obstacle('./black.png', randomBlockHorizOffset, 300, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle02 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle03 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle04 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle05 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle06 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle07 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle08 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle09 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle10 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle11 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle12 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle13 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle14 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle15 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle16 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle17 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle18 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle19 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
+var obstacle20 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
+obstacles = [obstacle01, obstacle02, obstacle03, obstacle04, obstacle05, obstacle06, obstacle07, obstacle08, obstacle09, obstacle10, obstacle11, obstacle12, obstacle13, obstacle14, obstacle15, obstacle16, obstacle17, obstacle18, obstacle19, obstacle20];
 
 //Animation and game speed controller
 let gameFrame = 0;
@@ -203,8 +264,8 @@ function defineSpriteArea() {
             loc: [],
         }
         for (let j = 0; j < state.frames; j++) {
-            let positionX = j * playerSpriteWidth;
-            let positionY = index * playerSpriteHeight;
+            let positionX = j * player.spriteWidth;
+            let positionY = index * player.spriteHeight;
             frames.loc.push({x: positionX, y: positionY});
         }
         spriteAnimations[state.name] = frames;
@@ -234,70 +295,75 @@ function faceLeft() {
 //Create the function to dash in the direction the player is facing
 var dashing = false;
 function dash() {
-    if (playerDownSpeed > 0 && !onFloor) {
+    if (player.downSpeed > 0 && !onFloor) {
         playerState = 'roll';
-        gravitySpeed /= 4;
+        player.gravitySpeed /= 2;
         dashing = true;
-        canWalk = false;
+        if (keys[67]) {
+            player.canWalk = false;
+        }
         if (facingRight) {
-            gameSpeed = 2 * runningSpeed;
+            gameSpeed = 2 * player.runningSpeed;
         }
         else {
-            gameSpeed = -2 * runningSpeed;
+            gameSpeed = -2 * player.runningSpeed;
         }
     }
 }
 
 //Move function
 function move() {
-    //console.log(canWalk);
-    if (canWalk) {
-        if (keys && keys[87]) {
+    //console.log(player.canWalk);
+    if (!keys[67]) {
+        player.canWalk = true;
+    };
+    if (player.canWalk) {
+        if (keys && keys[90]) {
             if (onFloor) {
-                playerDownSpeed -= 25;
-                if (playerDownSpeed < -25) {
-                    playerDownSpeed = -25;
+                player.downSpeed -= 25;
+                if (player.downSpeed < -25) {
+                    player.downSpeed = -25;
                 }
                 onFloor = false;
             }
         };
-        if (keys && keys[32]) {
+        /*if (keys && keys[32]) {
             if (onFloor) {
-                playerDownSpeed -= 25;
-                if (playerDownSpeed < -25) {
-                    playerDownSpeed = -25;
+                player.downSpeed -= 25;
+                if (player.downSpeed < -25) {
+                    player.downSpeed = -25;
                 }
                 onFloor = false;
             }
-        };
-        if (keys && keys[65]) {
+        };*/
+        if (keys && keys[37]) {
             playerState = 'run';
-            playerX -= runningSpeed;
+            player.x -= player.runningSpeed;
             faceLeft();
         };
-        if (keys && keys[68]) {
+        if (keys && keys[39]) {
             playerState = 'run';
-            playerX += runningSpeed;
+            player.x += player.runningSpeed;
             faceRight();
         };
-		if (keys[65] && keys[68]) {
+		if (keys[37] && keys[39]) {
 			playerState = 'idle';
 		};
-        if (keys && keys[17]) {
+        if (keys && keys[67]) {
             dash();
         };
-        if (playerX > CANVAS_WIDTH - 200 - playerWidth) {
-            gameSpeed += playerSpeed;
-			playerX = CANVAS_WIDTH - 200 - playerWidth;
-            if (gameSpeed > runningSpeed) {
-                gameSpeed = runningSpeed;
+        if (player.x > CANVAS_WIDTH - 200 - player.width) {
+            gameSpeed += player.speed;
+			player.x = CANVAS_WIDTH - 200 - player.width;
+            if (gameSpeed > player.runningSpeed) {
+                gameSpeed = player.runningSpeed;
             };
         }
-        else if (playerX < 100) {
-            gameSpeed -= playerSpeed;
-            playerX = 100;
-            if (gameSpeed < -runningSpeed) {
-                gameSpeed = -runningSpeed;
+        else if (player.x < 100) {
+            gameSpeed -= player.speed;
+            player.x = 100;
+            if (gameSpeed < -player.runningSpeed) {
+                gameSpeed = -player.runningSpeed;
             };
         }
 		else {
@@ -312,23 +378,23 @@ function move() {
 //Set up gravity
 function gravity() {
     if (onFloor) {
-        playerDownSpeed = 0;
+        player.downSpeed = 0;
         if (!keys) {
             playerState = 'idle';
         }
     }
     if (!dashing) {
-        if (playerDownSpeed < 0) {
+        if (player.downSpeed < 0) {
             playerState = 'jump';
         }
-        if (playerDownSpeed > 0) {
+        if (player.downSpeed > 0) {
             playerState = 'fall';
         }
     }
-    //console.log(playerDownSpeed);
+    //console.log(player.downSpeed);
     //console.log(onFloor);
-    playerY += playerDownSpeed;
-    playerDownSpeed += gravitySpeed;
+    player.y += player.downSpeed;
+    player.downSpeed += player.gravitySpeed;
 }
 
 //Add input
@@ -354,52 +420,51 @@ window.addEventListener('load', function() {
             layer.draw();
         });
 
-        //Draw obstacle
-        testObstacle.update();
-        testObstacle.draw();
-        secondObstacle.update();
-        secondObstacle.draw();
+        obstacles.forEach(obstacle => {
+            obstacle.update();
+            obstacle.draw();
+        });
 
         //Draw player
         let position = Math.floor(gameFrame / staggerFrames) % spriteAnimations[playerState].loc.length;
-        let frameX = playerSpriteWidth * position;
+        let frameX = player.spriteWidth * position;
         let frameY = spriteAnimations[playerState].loc[position].y;
         if (facingRight) {
-            ctx.drawImage(playerImageRight, frameX, frameY, playerSpriteWidth, playerSpriteHeight, playerX, playerY, playerWidth, playerHeight);
+            ctx.drawImage(player.imageRight, frameX, frameY, player.spriteWidth, player.spriteHeight, player.x, player.y, player.width, player.height);
         }
         if (facingLeft) {
-            ctx.drawImage(playerImageLeft, playerImageLeft.width - frameX, frameY, -playerSpriteWidth, playerSpriteHeight, playerX, playerY, playerWidth, playerHeight);
+            ctx.drawImage(player.imageLeft, player.imageLeft.width - frameX, frameY, -player.spriteWidth, player.spriteHeight, player.x, player.y, player.width, player.height);
         }
 
         if (keys.length > 0) {
             //console.log(keys);
         }
 
-        if (!keys[65] && !keys[68]) {
+        if (!keys[37] && !keys[39]) {
             gameSpeed = 0;
                 if (onFloor) {
                     playerState = 'idle';
                 }
         }
 
-        if (!keys[87] && !keys[32]) {
-            if (playerDownSpeed < 5) {
-                playerDownSpeed = 5;
+        if (!keys[90] && !keys[67]) {
+            if (player.downSpeed < 5) {
+                player.downSpeed = 5;
             }
         }
         
         if (onFloor) {
             dashing = false;
-            canWalk = true;
+            player.canWalk = true;
             playerstate = 'idle';
-            gravitySpeed = 1;
+            player.gravitySpeed = 1;
         }
 
         move();
         gravity();
-        colliding(playerX, playerY, playerWidth, playerHeight, 0, floorHeight, CANVAS_WIDTH, CANVAS_HEIGHT);
+        colliding(player.x, player.y, player.width, player.height, 0, floorHeight, CANVAS_WIDTH, CANVAS_HEIGHT);
         if (onFloor) {
-            playerY = floorHeight - playerHeight;
+            player.y = floorHeight - player.height;
         }
 
         //Advance frame and start loop again
