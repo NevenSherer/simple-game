@@ -1,5 +1,3 @@
-/**/
-
 var temp;
 var collision = true;
 var onFloor = false;
@@ -16,34 +14,13 @@ function colliding(x, y, width, height, x2, y2, width2, height2) {
     return collision;
 }
 
-//Initialize canvas
 const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
 const CANVAS_WIDTH = canvas.width = 800;
 const CANVAS_HEIGHT = canvas.height = 700;
 
-//Player setup
 let playerState = 'idle';
 const dropdown = document.getElementById('animations');
-/*dropdown.addEventListener('change', function(e) {
-    playerState = e.target.value;
-})*/
-/*const player.imageRight = new Image();
-player.imageRight.src = './sprites/shadow_dog_right.png';
-const player.imageLeft = new Image();
-player.imageLeft.src = './sprites/shadow_dog_left.png';
-const player.spriteWidth = 575;
-const player.spriteHeight = 523;
-var player.spriteToCharacterScale = 3;
-var player.width = player.spriteWidth / player.spriteToCharacterScale;
-var player.height = player.spriteHeight / player.spriteToCharacterScale;
-var player.downSpeed = 0;
-var player.x = 100;
-var player.y = 0;
-var player.speed = 1;
-var player.canWalk = true;
-var player.gravitySpeed = 1;
-var player.runningSpeed = 8;*/
 
 class Player {
     constructor(imageRight, imageLeft, spriteWidth, spriteHeight, spriteToCharacterScale, downSpeed, x, y, speed, canWalk, gravitySpeed, runningSpeed) {
@@ -54,8 +31,8 @@ class Player {
         this.spriteWidth = spriteWidth,
         this.spriteHeight = spriteHeight,
         this.spriteToCharacterScale = spriteToCharacterScale,
-        this.width = spriteWidth / spriteToCharacterScale,
-        this.height = spriteHeight / spriteToCharacterScale,
+        this.width = this.spriteWidth / this.spriteToCharacterScale,
+        this.height = this.spriteHeight / this.spriteToCharacterScale,
         this.downSpeed = downSpeed,
         this.x = x,
         this.y = y,
@@ -67,21 +44,41 @@ class Player {
 }
 const player = new Player('./sprites/shadow_dog_right.png', './sprites/shadow_dog_left.png', 575, 523, 3, 0, 100, 0, 1, true, 1, 8);
 
-//Floor initialization
+class Enemy {
+    constructor(imageRight, imageLeft, spriteWidth, spriteHeight, spriteToEnemyScale, affectedByGravity, x, y, speed, movementSpeed) {
+        this.imageRight = new Image(),
+        this.imageRight.src = imageRight,
+        this.imageLeft = new Image(),
+        this.imageLeft.src = imageLeft,
+        this.spriteWidth = spriteWidth,
+        this.spriteHeight = spriteHeight,
+        this.spriteToEnemyScale = spriteToEnemyScale,
+        this.width = this.spriteWidth / this.spriteToEnemyScale,
+        this.height = this.spriteHeight / this.spriteToEnemyScale,
+        this.affectedByGravity = affectedByGravity,
+        this.downSpeed = 0,
+        this.x = x,
+        this.y = y,
+        this.speed = speed,
+        this.movementSpeed = movementSpeed
+    }
+
+    update() {
+
+    }
+
+    draw() {
+
+    }
+}
+var enemy1 = new Enemy('./sprites/black.png', './sprites/black.png', 50, 50, 1, true, 500, 200, 0.9, 6);
+
 var floorHeight = CANVAS_HEIGHT - 120;
 
-//Control speed of background
 var gameSpeed = 0;
 const sliderValue = document.getElementById('slider');
 const showGameSpeed = document.getElementById('showGameSpeed');
-/*sliderValue.value = gameSpeed;*/
-/*showGameSpeed.innerHTML = gameSpeed;*/
-/*sliderValue.addEventListener('change', function(e) {
-    gameSpeed = e.target.value;
-    showGameSpeed.innerHTML = e.target.value;
-});*/
 
-//Define background images
 const backgroundLayer1 = new Image();
 backgroundLayer1.src = './sprites/background/layer-1.png';
 const backgroundLayer2 = new Image();
@@ -93,7 +90,6 @@ backgroundLayer4.src = './sprites/background/layer-4.png';
 const backgroundLayer5 = new Image();
 backgroundLayer5.src = './sprites/background/layer-5.png';
 
-//Control parallax layers
 class Layer {
     constructor(image, speedModifier) {
         this.x = 0;
@@ -121,7 +117,6 @@ class Layer {
     }
 }
 
-//Set up layer objects
 const layer1 = new Layer(backgroundLayer1, 0.2);
 const layer2 = new Layer(backgroundLayer2, 0.4);
 const layer3 = new Layer(backgroundLayer3, 0.6);
@@ -130,7 +125,6 @@ const layer5 = new Layer(backgroundLayer5, 1);
 
 const backgroundLayers = [layer1, layer2, layer3, layer4, layer5];
 
-//Obstacle class setup
 class Obstacle {
     constructor(image, x, y, width, height) {
         this.width = width;
@@ -142,7 +136,7 @@ class Obstacle {
 
     update() {
         this.speed = gameSpeed;
-        if (this.x <= player.x + player.width && this.x + this.width >= player.x && player.y + player.height >= this.y && player.y <= this.y + this. height)
+        if (this.x <= player.x + player.width && this.x + this.width >= player.x/* && player.y + player.height >= this.y && player.y <= this.y + this. height*/)
         {
             if (player.y + player.height >= this.y && player.x <= this.x + this.width && player.x + player.width >= this.x && player.downSpeed >= 0 && player.y + player.height - this.y < player.downSpeed) {
                 player.y = this.y - player.height;
@@ -209,7 +203,6 @@ randomBlockHorizOffset += Math.floor(Math.random() * 400) + 200;
 var obstacle20 = new Obstacle('./black.png', randomBlockHorizOffset, 250, 100, 100);
 obstacles = [obstacle01, obstacle02, obstacle03, obstacle04, obstacle05, obstacle06, obstacle07, obstacle08, obstacle09, obstacle10, obstacle11, obstacle12, obstacle13, obstacle14, obstacle15, obstacle16, obstacle17, obstacle18, obstacle19, obstacle20];
 
-//Animation and game speed controller
 let gameFrame = 0;
 var staggerFrames = 5;
 const spriteAnimations = [];
@@ -256,9 +249,8 @@ const animationStates = [
     }
 ]
 
-//Set up individual sprites
 offset = 0;
-function defineSpriteArea() {
+function definePlayerSpriteArea() {
     animationStates.forEach((state, index) => {
         let frames = {
             loc: [],
@@ -271,28 +263,23 @@ function defineSpriteArea() {
         spriteAnimations[state.name] = frames;
     });
 }
-defineSpriteArea();
+definePlayerSpriteArea();
 
-//Flipping player
-//Note: only affects player, need another one for enemies
 var facingRight = true;
 var facingLeft = !facingRight;
-function faceRight() {
+function facePlayerRight() {
     if (!facingRight) {
-        //defineSpriteArea();
         facingRight = true;
         facingLeft = false;
     }
 }
-function faceLeft() {
+function facePlayerLeft() {
     if (!facingLeft) {
-        //defineSpriteArea();
         facingLeft = true;
         facingRight = false;
     }
 }
 
-//Create the function to dash in the direction the player is facing
 var dashing = false;
 function dash() {
     if (player.downSpeed > 0 && !onFloor) {
@@ -311,9 +298,7 @@ function dash() {
     }
 }
 
-//Move function
-function move() {
-    //console.log(player.canWalk);
+function movePlayer() {
     if (!keys[67]) {
         player.canWalk = true;
     };
@@ -327,24 +312,15 @@ function move() {
                 onFloor = false;
             }
         };
-        /*if (keys && keys[32]) {
-            if (onFloor) {
-                player.downSpeed -= 25;
-                if (player.downSpeed < -25) {
-                    player.downSpeed = -25;
-                }
-                onFloor = false;
-            }
-        };*/
         if (keys && keys[37]) {
             playerState = 'run';
             player.x -= player.runningSpeed;
-            faceLeft();
+            facePlayerLeft();
         };
         if (keys && keys[39]) {
             playerState = 'run';
             player.x += player.runningSpeed;
-            faceRight();
+            facePlayerRight();
         };
 		if (keys[37] && keys[39]) {
 			playerState = 'idle';
@@ -375,8 +351,7 @@ function move() {
     }
 };
 
-//Set up gravity
-function gravity() {
+function playerGravity() {
     if (onFloor) {
         player.downSpeed = 0;
         if (!keys) {
@@ -391,13 +366,10 @@ function gravity() {
             playerState = 'fall';
         }
     }
-    //console.log(player.downSpeed);
-    //console.log(onFloor);
     player.y += player.downSpeed;
     player.downSpeed += player.gravitySpeed;
 }
 
-//Add input
 var keys = [];
 window.addEventListener('keydown', function(e) {
     keys = (keys || []);
@@ -408,13 +380,10 @@ window.addEventListener('keyup', function(e) {
     playerState = 'idle';
 });
 
-//Ensure page is loaded before starting game
 window.addEventListener('load', function() {
     function animate() {
-        //Clear canvas so it is a clean animation
         ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        //Draw background layers
         backgroundLayers.forEach(layer => {
             layer.update();
             layer.draw();
@@ -425,7 +394,6 @@ window.addEventListener('load', function() {
             obstacle.draw();
         });
 
-        //Draw player
         let position = Math.floor(gameFrame / staggerFrames) % spriteAnimations[playerState].loc.length;
         let frameX = player.spriteWidth * position;
         let frameY = spriteAnimations[playerState].loc[position].y;
@@ -434,10 +402,6 @@ window.addEventListener('load', function() {
         }
         if (facingLeft) {
             ctx.drawImage(player.imageLeft, player.imageLeft.width - frameX, frameY, -player.spriteWidth, player.spriteHeight, player.x, player.y, player.width, player.height);
-        }
-
-        if (keys.length > 0) {
-            //console.log(keys);
         }
 
         if (!keys[37] && !keys[39]) {
@@ -460,14 +424,13 @@ window.addEventListener('load', function() {
             player.gravitySpeed = 1;
         }
 
-        move();
-        gravity();
+        movePlayer();
+        playerGravity();
         colliding(player.x, player.y, player.width, player.height, 0, floorHeight, CANVAS_WIDTH, CANVAS_HEIGHT);
         if (onFloor) {
             player.y = floorHeight - player.height;
         }
 
-        //Advance frame and start loop again
         gameFrame++;
         requestAnimationFrame(animate);
     }
